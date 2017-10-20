@@ -1,12 +1,9 @@
 package com.fastenal.gen.service;
 
-import com.fastenal.gen.model.D;
 import com.fastenal.gen.model.Request;
-import com.fastenal.gen.model.SwipeRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -26,6 +23,14 @@ public class TimeOutService {
     @Autowired
     ObjectMapper objectMapper;
 
+    Map<String, Map<Integer, Map<Date, String>>> swipeRecords = new HashMap<>();
+
+
+    public void obtainRecordFromApi() {
+
+    }
+
+
     public void tellTime()
     {
         HttpHeaders headers = new HttpHeaders();
@@ -43,7 +48,6 @@ public class TimeOutService {
             e.printStackTrace();
         }
         ResponseEntity<String> postResponse = restTemplate.exchange(postUrl, HttpMethod.POST, entity, String.class);
-        //String postResponse = "{\"d\":{\"SwipeRecord\":{\"1\":{\"swipeTime\":\"12:58 PM\",\"swipeInOut\":\"In\"},\"2\":{\"swipeTime\":\"01:34 PM\",\"swipeInOut\":\"Out\"},\"3\":{\"swipeTime\":\"01:34 PM\",\"swipeInOut\":\"Out\"},\"4\":{\"swipeTime\":\"01:42 PM\",\"swipeInOut\":\"In\"},\"5\":{\"swipeTime\":\"04:29 PM\",\"swipeInOut\":\"Out\"},\"6\":{\"swipeTime\":\"04:30 PM\",\"swipeInOut\":\"In\"},\"7\":{\"swipeTime\":\"06:51 PM\",\"swipeInOut\":\"Out\"},\"8\":{\"swipeTime\":\"06:52 PM\",\"swipeInOut\":\"In\"},\"9\":{\"swipeTime\":\"10:28 PM\",\"swipeInOut\":\"Out\"},\"10\":{\"swipeTime\":\"10:29 PM\",\"swipeInOut\":\"In\"},\"11\":{\"swipeTime\":\"11:04 PM\",\"swipeInOut\":\"Out\"},\"12\":{\"swipeTime\":\"11:09 PM\",\"swipeInOut\":\"In\"},\"13\":{\"swipeTime\":\"11:37 PM\",\"swipeInOut\":\"Out\"}}}}";
         Map<String,String> garbageContainer ;
         Map<String,Map<Integer,Map<Date,String>>> swipeRecords = new HashMap<>() ;
         DateFormat sdf = new SimpleDateFormat("hh:mm aaa");
