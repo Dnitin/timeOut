@@ -1,4 +1,6 @@
 # timeOut
 
-Propiratery code
-Probably wont be useful for you
+Propiratery code.
+
+
+Probably wont be useful to you
