@@ -8,6 +8,7 @@ public class rightClickmenu {
 
     private SystemTray systemTray = SystemTray.getSystemTray();
 
+
     public void renderRightClickMenu() {
         MenuItem employeeId = new MenuItem("Enter Employee ID");
     }

@@ -1,5 +1,6 @@
 package com.fastenal.gen.config;
 
+import com.fastenal.gen.model.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,6 +24,11 @@ public class TimeOutConfig {
     @Bean
     public ObjectMapper objectMapper(){
         return new ObjectMapper();
+    }
+
+    @Bean
+    public Request requestObject() {
+        return new Request();
     }
 
     @Bean

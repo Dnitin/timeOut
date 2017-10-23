@@ -1,10 +1,14 @@
 package com.fastenal.gen.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import org.springframework.context.annotation.Configuration;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.beans.factory.annotation.Value;
 
-@Configuration
 public class Request {
+
+    @JsonIgnore
+    @Value("${swipeApi.url:url}")
+    private String url;
 
     private String SelectedDate;
 
@@ -13,6 +17,14 @@ public class Request {
     @JsonGetter("SelectedDate")
     public String getSelectedDate() {
         return SelectedDate;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public void setSelectedDate(String selectedDate) {
