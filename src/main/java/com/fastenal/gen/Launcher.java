@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.PropertySource;
 
 
@@ -19,7 +20,8 @@ public class Launcher implements CommandLineRunner {
 
 	public static void main(String[] args)
 	{
-		SpringApplication.run(Launcher.class).close();
+		SpringApplicationBuilder builder = new SpringApplicationBuilder(Launcher.class);
+		builder.headless(false).run(args).close();
 	}
 
 	@Override

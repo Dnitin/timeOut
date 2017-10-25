@@ -22,6 +22,14 @@ import java.security.cert.X509Certificate;
 public class TimeOutConfig {
 
     @Bean
+    public SystemTray getSystemTray() {
+        if (SystemTray.isSupported()) {
+            return SystemTray.getSystemTray();
+        } else
+            return null;
+    }
+
+    @Bean
     public ObjectMapper objectMapper(){
         return new ObjectMapper();
     }
