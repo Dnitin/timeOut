@@ -1,24 +1,42 @@
 package com.fastenal.gen.ui;
 
 import com.fastenal.gen.model.Request;
+import com.fastenal.gen.runtimeComponents.TimeOutRuntime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
+@Repository
 public class RightClickmenu {
 
     @Autowired
-    private SystemTray systemTray;
+    TimeOutRuntime timeOutObject;
 
     @Autowired
-    private Request request;
+    Request request;
 
+    @PostConstruct
+    public void setEmpId() {
+        DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        Date date = new Date();
+        request.setSelectedDate(dateFormat.format(date).toString());
+        String employee = JOptionPane.showInputDialog("Enter Employee Id");
+        if (!employee.isEmpty()) {
+            request.setEmpid(employee);
+        }
+    }
 
     public void renderRightClickMenu() {
+        SystemTray systemTray = SystemTray.getSystemTray();
         PopupMenu trayPopupMenu = new PopupMenu();
         Image image = Toolkit.getDefaultToolkit().getImage("src/images/1.ico");
 
@@ -34,6 +52,24 @@ public class RightClickmenu {
         });
         trayPopupMenu.add(employeeId);
 
+        MenuItem swipeRecords = new MenuItem("List Swipe record");
+        swipeRecords.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTable swipeTable = getSwipeList();
+
+                JScrollPane jScrollPane = new JScrollPane(swipeTable,
+                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                jScrollPane.setPreferredSize(new Dimension(400, 150));
+
+                JOptionPane.showMessageDialog(null,
+                        jScrollPane, "Swipe Records", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+        trayPopupMenu.add(swipeRecords);
+        trayPopupMenu.addSeparator();
+
         MenuItem exit = new MenuItem("Exit");
         exit.addActionListener(new ActionListener() {
             @Override
@@ -43,14 +79,6 @@ public class RightClickmenu {
         });
         trayPopupMenu.add(exit);
 
-        MenuItem swipeRecords = new MenuItem("List Swipe record");
-        swipeRecords.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                getSwipeList();
-            }
-        });
-        trayPopupMenu.add(swipeRecords);
         TrayIcon trayIcons = new TrayIcon(image, "TimeOut App", trayPopupMenu);
 
         trayIcons.addActionListener(new ActionListener() {
@@ -68,8 +96,17 @@ public class RightClickmenu {
         }
     }
 
-    public void getSwipeList() {
-
+    public JTable getSwipeList() {
+        Map<Integer, Map<Date, String>> swipeRecords = timeOutObject.obtainSwipeRecord();
+        String[][] data = new String[swipeRecords.size()][3];
+        String[] legends = {"Serial #", "Swipe Time", "In/Out"};
+        int i = 0;
+        for (Map.Entry<Integer, Map<Date, String>> entry : swipeRecords.entrySet()) {
+            data[i][0] = String.valueOf(i + 1);
+            data[i][1] = entry.getValue().get("swipeTime").toString();
+            data[i][2] = entry.getValue().get("swipeInOut").toString();
+            i++;
+        }
+        return new JTable(data, legends);
     }
-
 }

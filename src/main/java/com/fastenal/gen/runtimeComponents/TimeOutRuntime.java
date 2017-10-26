@@ -29,11 +29,6 @@ public class TimeOutRuntime {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @PostConstruct
-    public void setEmployeeId() {
-        request.setEmpid("112419");
-        request.setSelectedDate("10-23-2017");
-    }
 
     public Map<Integer, Map<Date, String>> obtainSwipeRecord() {
         HttpHeaders headers = new HttpHeaders();
