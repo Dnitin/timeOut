@@ -90,9 +90,9 @@ public class TimeOutRuntime {
         for (String key : weeklyhours.keySet()) {
             String weekTotal = weeklyhours.get(key).split(";")[1];
             hours = Double.valueOf(weekTotal);
+            System.out.println(hours);
         }
-        //int days = hours%8;
-        Double inMillis = hours * 3600000;
+
         return 0;
     }
 
@@ -122,6 +122,7 @@ public class TimeOutRuntime {
             }
         }
 
+        //System.out.println(millis);
         if (prevVal.equalsIgnoreCase("In")) {
             String todayDate = formatter.format(new Date());
             try {
@@ -131,6 +132,8 @@ public class TimeOutRuntime {
             }
             millis += currDate.getTime() - prevDate.getTime();
         }
+        //System.out.println(totalMillis - millis);
         return totalMillis - millis;
+
     }
 }

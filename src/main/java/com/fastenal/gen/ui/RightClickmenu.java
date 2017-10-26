@@ -31,10 +31,10 @@ public class RightClickmenu {
     @PostConstruct
     public void setEmpId() {
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM");
+        DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
         requestSwipe.setSelectedDate(dateFormat.format(date).toString());
-        requestLeave.setCurrdate(dateFormat2.format(date).toString() + "/01");
+        requestLeave.setCurrdate(dateFormat2.format(date).toString());
         String employee = JOptionPane.showInputDialog("Enter Employee Id");
         if (!employee.isEmpty()) {
             requestSwipe.setEmpid(employee);
@@ -89,10 +89,15 @@ public class RightClickmenu {
         TrayIcon trayIcons = new TrayIcon(image, "TimeOut", trayPopupMenu);
 
         trayIcons.addActionListener(new ActionListener() {
+            long x = timeOutObject.calculateWeeklyRemainingTime();
+            long time = timeOutObject.calculateRemainingMillis();
+            long diffSec = time / 1000;
+            long min = diffSec / 60;
+            long hour = min / 60;
+            long min2 = min % 60;
             @Override
             public void actionPerformed(ActionEvent e) {
-                trayIcons.displayMessage("User", "Time Left for day: " +
-                        timeOutObject.obtainWeekRecord().toString(), TrayIcon.MessageType.INFO);
+                trayIcons.displayMessage("User", "Time Left for day: " + hour + " hours " + min2 + " minutes ", TrayIcon.MessageType.INFO);
             }
         });
 
@@ -105,14 +110,14 @@ public class RightClickmenu {
     }
 
     public JTable getSwipeList() {
-        Map<Integer, Map<Date, String>> swipeRecords = timeOutObject.obtainSwipeRecord();
+        Map<Integer, Map<String, String>> swipeRecords = timeOutObject.obtainSwipeRecord();
         String[][] data = new String[swipeRecords.size()][3];
         String[] legends = {"Serial #", "Swipe Time", "In/Out"};
         int i = 0;
-        for (Map.Entry<Integer, Map<Date, String>> entry : swipeRecords.entrySet()) {
+        for (Map.Entry<Integer, Map<String, String>> entry : swipeRecords.entrySet()) {
             data[i][0] = String.valueOf(i + 1);
-            data[i][1] = entry.getValue().get("swipeTime").toString();
-            data[i][2] = entry.getValue().get("swipeInOut").toString();
+            data[i][1] = entry.getValue().get("swipeTime");
+            data[i][2] = entry.getValue().get("swipeInOut");
             i++;
         }
         return new JTable(data, legends);
