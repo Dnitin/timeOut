@@ -1,6 +1,7 @@
 package com.fastenal.gen.ui;
 
-import com.fastenal.gen.model.Request;
+import com.fastenal.gen.model.RequestLeave;
+import com.fastenal.gen.model.RequestSwipe;
 import com.fastenal.gen.runtimeComponents.TimeOutRuntime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,16 +23,22 @@ public class RightClickmenu {
     TimeOutRuntime timeOutObject;
 
     @Autowired
-    Request request;
+    RequestSwipe requestSwipe;
+
+    @Autowired
+    RequestLeave requestLeave;
 
     @PostConstruct
     public void setEmpId() {
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM");
         Date date = new Date();
-        request.setSelectedDate(dateFormat.format(date).toString());
+        requestSwipe.setSelectedDate(dateFormat.format(date).toString());
+        requestLeave.setCurrdate(dateFormat2.format(date).toString() + "/01");
         String employee = JOptionPane.showInputDialog("Enter Employee Id");
         if (!employee.isEmpty()) {
-            request.setEmpid(employee);
+            requestSwipe.setEmpid(employee);
+            requestLeave.setEmpid(employee);
         }
     }
 
@@ -46,7 +53,7 @@ public class RightClickmenu {
             public void actionPerformed(ActionEvent e) {
                 String employee = JOptionPane.showInputDialog("Enter Employee Id");
                 if (!employee.isEmpty()) {
-                    request.setEmpid(employee);
+                    requestSwipe.setEmpid(employee);
                 }
             }
         });
@@ -79,12 +86,13 @@ public class RightClickmenu {
         });
         trayPopupMenu.add(exit);
 
-        TrayIcon trayIcons = new TrayIcon(image, "TimeOut App", trayPopupMenu);
+        TrayIcon trayIcons = new TrayIcon(image, "TimeOut", trayPopupMenu);
 
         trayIcons.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                trayIcons.displayMessage("User", "Time Left for day: ", TrayIcon.MessageType.INFO);
+                trayIcons.displayMessage("User", "Time Left for day: " +
+                        timeOutObject.obtainWeekRecord().toString(), TrayIcon.MessageType.INFO);
             }
         });
 
