@@ -13,13 +13,25 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.SSLContext;
+import java.awt.*;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-dd
+
 @Configuration
 public class TimeOutConfig {
+
+    @Bean
+    public PopupMenu popupMenu() {
+        return new PopupMenu();
+    }
+
+    @Bean
+    public TrayIcon trayIcon() {
+        Image image = Toolkit.getDefaultToolkit().getImage("src/images/bulb.gif");
+        return new TrayIcon(image, "TimeOut", popupMenu());
+    }
 
     @Bean
     public ObjectMapper objectMapper(){

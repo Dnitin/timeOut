@@ -8,10 +8,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 @SpringBootApplication
 @EnableAutoConfiguration
+@EnableScheduling
 @PropertySource("/prop/application.properties")
 public class Launcher implements CommandLineRunner {
 
@@ -21,7 +23,7 @@ public class Launcher implements CommandLineRunner {
 	public static void main(String[] args)
 	{
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Launcher.class);
-		builder.headless(false).run(args).close();
+		builder.headless(false).run(args);
 	}
 
 	@Override

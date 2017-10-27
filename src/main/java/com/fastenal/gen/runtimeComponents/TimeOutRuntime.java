@@ -84,16 +84,22 @@ public class TimeOutRuntime {
         return swipeRecords.get("SwipeRecord");
     }
 
+    public long timeInMinutes(String hours){
+        String[] hour = hours.split(":");
+        return Long.valueOf(hour[0])*60+Long.valueOf(hour[1]);
+    }
+
     public long calculateWeeklyRemainingTime() {
         Map<String, String> weeklyhours = obtainWeekRecord();
-        Double hours = null;
+        Long value = null;
         for (String key : weeklyhours.keySet()) {
-            String weekTotal = weeklyhours.get(key).split(";")[1];
-            hours = Double.valueOf(weekTotal);
-            System.out.println(hours);
+            String[] avgTotal = weeklyhours.get(key).split(";");
+            Long weekAvg = timeInMinutes(avgTotal[0]);
+            Long weekTotal = timeInMinutes(avgTotal[1]);
+            Long dayNum = weekTotal/weekAvg;
+            value = dayNum*8*60 - weekTotal;
         }
-
-        return 0;
+        return value;
     }
 
     public long calculateRemainingMillis() {
@@ -101,7 +107,7 @@ public class TimeOutRuntime {
         long millis = 0;
         long totalMillis = 28800000;
         String prevVal = "darbage";
-        String currVal = "garbage";
+        String currVal;
         Date currDate = new Date();
         Date prevDate = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
@@ -115,7 +121,6 @@ public class TimeOutRuntime {
             if (prevVal.equalsIgnoreCase("In") && currVal.equalsIgnoreCase("Out")) {
                 millis += currDate.getTime() - prevDate.getTime();
                 prevVal = "garbage";
-                currVal = "garbage";
             } else {
                 prevVal = currVal;
                 prevDate = currDate;

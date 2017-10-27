@@ -4,6 +4,7 @@ import com.fastenal.gen.model.RequestLeave;
 import com.fastenal.gen.model.RequestSwipe;
 import com.fastenal.gen.runtimeComponents.TimeOutRuntime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -28,13 +29,21 @@ public class RightClickmenu {
     @Autowired
     RequestLeave requestLeave;
 
+    @Autowired
+    PopupMenu trayPopupMenu;
+
+    @Autowired
+    TrayIcon trayIcon;
+
     @PostConstruct
     public void setEmpId() {
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
-        requestSwipe.setSelectedDate(dateFormat.format(date).toString());
-        requestLeave.setCurrdate(dateFormat2.format(date).toString());
+        requestSwipe.setSelectedDate("10/27/2017");
+        requestLeave.setCurrdate("2017/10/27");
+//        requestSwipe.setSelectedDate(dateFormat.format(date).toString());
+//        requestLeave.setCurrdate(dateFormat2.format(date).toString());
         String employee = JOptionPane.showInputDialog("Enter Employee Id");
         if (!employee.isEmpty()) {
             requestSwipe.setEmpid(employee);
@@ -44,8 +53,6 @@ public class RightClickmenu {
 
     public void renderRightClickMenu() {
         SystemTray systemTray = SystemTray.getSystemTray();
-        PopupMenu trayPopupMenu = new PopupMenu();
-        Image image = Toolkit.getDefaultToolkit().getImage("src/images/1.ico");
 
         MenuItem employeeId = new MenuItem("Employee ID");
         employeeId.addActionListener(new ActionListener() {
@@ -86,27 +93,31 @@ public class RightClickmenu {
         });
         trayPopupMenu.add(exit);
 
-        TrayIcon trayIcons = new TrayIcon(image, "TimeOut", trayPopupMenu);
-
-        trayIcons.addActionListener(new ActionListener() {
-            long x = timeOutObject.calculateWeeklyRemainingTime();
-            long time = timeOutObject.calculateRemainingMillis();
-            long diffSec = time / 1000;
-            long min = diffSec / 60;
-            long hour = min / 60;
-            long min2 = min % 60;
+        trayIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                trayIcons.displayMessage("User", "Time Left for day: " + hour + " hours " + min2 + " minutes ", TrayIcon.MessageType.INFO);
+                trayPopupMenu();
             }
         });
 
-        trayIcons.setImageAutoSize(true);
+        trayIcon.setImageAutoSize(true);
         try {
-            systemTray.add(trayIcons);
+            systemTray.add(trayIcon);
         } catch (AWTException e) {
             e.printStackTrace();
         }
+    }
+
+    @Scheduled(cron = "0 0 9-21/4 ? * MON-FRI")
+    public void trayPopupMenu()
+    {
+        long time = timeOutObject.calculateRemainingMillis();
+        long diffSec = time / 1000;
+        long min = diffSec / 60;
+        long weekRemTime = timeOutObject.calculateWeeklyRemainingTime() + min;
+        trayIcon.displayMessage("User", "Time Left for week: " + weekRemTime / 60 + " hours "
+                        + weekRemTime % 60 + " minutes \nTime Left for day: " + min / 60 + " hours " + min % 60 + " minutes ",
+                TrayIcon.MessageType.INFO);
     }
 
     public JTable getSwipeList() {
