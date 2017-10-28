@@ -40,10 +40,8 @@ public class RightClickmenu {
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
-        requestSwipe.setSelectedDate("10/27/2017");
-        requestLeave.setCurrdate("2017/10/27");
-//        requestSwipe.setSelectedDate(dateFormat.format(date).toString());
-//        requestLeave.setCurrdate(dateFormat2.format(date).toString());
+        requestSwipe.setSelectedDate(dateFormat.format(date).toString());
+        requestLeave.setCurrdate(dateFormat2.format(date).toString());
         String employee = JOptionPane.showInputDialog("Enter Employee Id");
         if (!employee.isEmpty()) {
             requestSwipe.setEmpid(employee);

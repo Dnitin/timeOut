@@ -12,8 +12,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -29,7 +32,8 @@ public class TimeOutConfig {
 
     @Bean
     public TrayIcon trayIcon() {
-        Image image = Toolkit.getDefaultToolkit().getImage("src/images/bulb.gif");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("images/bulb.gif");
+        Image image = Toolkit.getDefaultToolkit().getImage(url);
         return new TrayIcon(image, "TimeOut", popupMenu());
     }
 
