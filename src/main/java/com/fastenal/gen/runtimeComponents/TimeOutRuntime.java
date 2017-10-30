@@ -91,7 +91,7 @@ public class TimeOutRuntime {
 
     public long calculateWeeklyRemainingTime() {
         Map<String, String> weeklyhours = obtainWeekRecord();
-        Long value = null;
+        Long value = 0L; //hot edited, may cause issues
         for (String key : weeklyhours.keySet()) {
             String[] avgTotal = weeklyhours.get(key).split(";");
             Long weekAvg = timeInMinutes(avgTotal[0]);
