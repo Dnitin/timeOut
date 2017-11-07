@@ -92,11 +92,13 @@ public class TimeOutRuntime {
     public long calculateWeeklyRemainingTime() {
         Map<String, String> weeklyhours = obtainWeekRecord();
         Long value = 0L;
+        Long dayNum = 0L;
         for (String key : weeklyhours.keySet()) {
             String[] avgTotal = weeklyhours.get(key).split(";");
             Long weekAvg = timeInMinutes(avgTotal[0]);
             Long weekTotal = timeInMinutes(avgTotal[1]);
-            Long dayNum = weekTotal/weekAvg;
+            if(weekAvg!=0)
+                dayNum = weekTotal/weekAvg;
             value = dayNum*8*60 - weekTotal;
         }
         return value;
@@ -127,7 +129,6 @@ public class TimeOutRuntime {
             }
         }
 
-        //System.out.println(millis);
         if (prevVal.equalsIgnoreCase("In")) {
             String todayDate = formatter.format(new Date());
             try {
@@ -137,7 +138,7 @@ public class TimeOutRuntime {
             }
             millis += currDate.getTime() - prevDate.getTime();
         }
-        //System.out.println(totalMillis - millis);
+
         return totalMillis - millis;
 
     }
