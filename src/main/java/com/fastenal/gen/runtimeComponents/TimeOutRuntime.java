@@ -93,6 +93,7 @@ public class TimeOutRuntime {
         Map<String, String> weeklyhours = obtainWeekRecord();
         Long value = 0L;
         Long dayNum = 0L;
+      
         for (String key : weeklyhours.keySet()) {
             String[] avgTotal = weeklyhours.get(key).split(";");
             Long weekAvg = timeInMinutes(avgTotal[0]);
