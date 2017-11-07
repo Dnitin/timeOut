@@ -37,16 +37,22 @@ public class RightClickmenu {
 
     @PostConstruct
     public void setEmpId() {
-        DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM/dd");
-        Date date = new Date();
-        requestSwipe.setSelectedDate(dateFormat.format(date).toString());
-        requestLeave.setCurrdate(dateFormat2.format(date).toString());
+        refreshDates();
         String employee = JOptionPane.showInputDialog("Enter Employee Id");
         if (!employee.isEmpty()) {
             requestSwipe.setEmpid(employee);
             requestLeave.setEmpid(employee);
         }
+    }
+
+    @Scheduled(cron = "1 0 0 ? * *")
+    public void refreshDates()
+    {
+        DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM/dd");
+        Date date = new Date();
+        requestSwipe.setSelectedDate(dateFormat.format(date).toString());
+        requestLeave.setCurrdate(dateFormat2.format(date).toString());
     }
 
     public void renderRightClickMenu() {
@@ -59,6 +65,7 @@ public class RightClickmenu {
                 String employee = JOptionPane.showInputDialog("Enter Employee Id");
                 if (!employee.isEmpty()) {
                     requestSwipe.setEmpid(employee);
+                    requestLeave.setEmpid(employee);
                 }
             }
         });
@@ -94,7 +101,7 @@ public class RightClickmenu {
         trayIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                trayPopupMenu();
+                trayPopupLeftTime();
             }
         });
 
@@ -106,14 +113,14 @@ public class RightClickmenu {
         }
     }
 
-    @Scheduled(cron = "0 0 9-21/4 ? * MON-FRI")
-    public void trayPopupMenu()
+    @Scheduled(cron = "0 0 9-21/3 ? * MON-FRI")
+    public void trayPopupLeftTime()
     {
         long time = timeOutObject.calculateRemainingMillis();
         long diffSec = time / 1000;
         long min = diffSec / 60;
         long weekRemTime = timeOutObject.calculateWeeklyRemainingTime() + min;
-        trayIcon.displayMessage("User", "Time Left for week: " + weekRemTime / 60 + " hours "
+        trayIcon.displayMessage("User", "Time Left for week till today: " + weekRemTime / 60 + " hours "
                         + weekRemTime % 60 + " minutes \nTime Left for day: " + min / 60 + " hours " + min % 60 + " minutes ",
                 TrayIcon.MessageType.INFO);
     }
