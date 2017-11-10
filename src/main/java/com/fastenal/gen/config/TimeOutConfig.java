@@ -32,9 +32,11 @@ public class TimeOutConfig {
 
     @Bean
     public TrayIcon trayIcon() {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("images/bulb.gif");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("images/icon.png");
         Image image = Toolkit.getDefaultToolkit().getImage(url);
-        return new TrayIcon(image, "TimeOut", popupMenu());
+        int trayIconWidth = new TrayIcon(image).getSize().width;
+        return new TrayIcon(image.getScaledInstance(trayIconWidth,
+                -1,Image.SCALE_SMOOTH), "TimeOut", popupMenu());
     }
 
     @Bean
