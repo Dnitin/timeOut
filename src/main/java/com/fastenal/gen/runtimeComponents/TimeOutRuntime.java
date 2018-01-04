@@ -139,8 +139,6 @@ public class TimeOutRuntime {
             }
             millis += currDate.getTime() - prevDate.getTime();
         }
-
         return totalMillis - millis;
-
     }
 }

@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -116,12 +117,34 @@ public class RightClickmenu {
     @Scheduled(cron = "0 0 9-21/3 ? * MON-FRI")
     public void trayPopupLeftTime()
     {
+        Date d1 = new Date();
+        Calendar cl1 = Calendar. getInstance();
+        Calendar cl2 = Calendar. getInstance();
+        cl1.setTime(d1);
+        cl2.setTime(d1);
         long time = timeOutObject.calculateRemainingMillis();
         long diffSec = time / 1000;
         long min = diffSec / 60;
         long weekRemTime = timeOutObject.calculateWeeklyRemainingTime() + min;
-        trayIcon.displayMessage("User", "Time Left for week till today: " + weekRemTime / 60 + " hours "
-                        + weekRemTime % 60 + " minutes \nTime Left for day: " + min / 60 + " hours " + min % 60 + " minutes ",
+
+        int weekHourToMove = Math.toIntExact(weekRemTime/60);
+        int weekMinuteToMove = Math.toIntExact(weekRemTime%60);
+
+        int dayHourToMove = Math.toIntExact(min/60);
+        int dayMinuteToMove = Math.toIntExact(min%60);
+
+        cl1.add(Calendar.HOUR,weekHourToMove);
+        cl1.add(Calendar.MINUTE, weekMinuteToMove);
+
+        cl2.add(Calendar.HOUR, dayHourToMove);
+        cl2.add(Calendar.MINUTE,dayMinuteToMove);
+
+        trayIcon.displayMessage("User", "Time Left for week till today: " + weekHourToMove + " hours "
+                        + weekMinuteToMove + " minutes\n"
+                        + "Time Left for day: " + dayHourToMove + " hours " + dayMinuteToMove + " minutes\n"
+                        + "Move by\n" + "WEEK : " + cl1.getTime().toString()
+                        + "\nDAY : " + cl2.getTime().toString(),
+
                 TrayIcon.MessageType.INFO);
     }
 
