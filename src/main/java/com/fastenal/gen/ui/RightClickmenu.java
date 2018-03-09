@@ -44,14 +44,25 @@ public class RightClickmenu {
     @PostConstruct
     public void setEmpId() {
         refreshDates();
-        String employee = JOptionPane.showInputDialog("Enter Employee Id");
-        if (!employee.isEmpty()) {
+        String systemId = System.getProperty("user.name");
+        String employee;
+        List<EmployeeList> employeeLists = timeOutObject.obtainEmployeeInfo(systemId);
+        if(employeeLists.size()<0 || employeeLists.size()>1) {
+            employee = JOptionPane.showInputDialog("Enter Employee Id");
+            if (!employee.isEmpty()) {
+                requestSwipe.setEmpid(employee);
+                requestLeave.setEmpid(employee);
+                employeeLists = timeOutObject.obtainEmployeeInfo(systemId);
+                employeeName = (employeeLists.size() > 1) ? "I Am Confused?" :
+                        employeeLists.get(0).getFirstName().split(" ")[0];
+            }
+        }
+        else {
+            employee = employeeLists.get(0).getEmpId().replaceFirst("^0+(?!$)", "");
             requestSwipe.setEmpid(employee);
             requestLeave.setEmpid(employee);
+            employeeName = employeeLists.get(0).getFirstName().split(" ")[0];
         }
-        List<EmployeeList> employeeLists = timeOutObject.obtainEmployeeInfo(requestSwipe.getEmpid());
-        employeeName = (employeeLists.size()>1) ? "I Am Confused?" :
-                employeeLists.get(0).getFirstName().split(" ")[0];
     }
 
     @Scheduled(cron = "1 0 0 ? * *")
@@ -71,7 +82,11 @@ public class RightClickmenu {
         employeeId.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setEmpId();
+                String employee = JOptionPane.showInputDialog("Enter Employee Id");
+                if (!employee.isEmpty()) {
+                    requestSwipe.setEmpid(employee);
+                    requestLeave.setEmpid(employee);
+                }
             }
         });
         trayPopupMenu.add(employeeId);
