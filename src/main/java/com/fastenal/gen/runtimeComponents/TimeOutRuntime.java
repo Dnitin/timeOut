@@ -1,10 +1,12 @@
 package com.fastenal.gen.runtimeComponents;
 
+import com.fastenal.gen.model.ESResponse;
 import com.fastenal.gen.model.RequestLeave;
 import com.fastenal.gen.model.RequestSwipe;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
@@ -14,8 +16,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -33,6 +37,20 @@ public class TimeOutRuntime {
     @Autowired
     private ObjectMapper objectMapper;
 
+    public String obtainEmployeeInfo() {
+        Gson gson = new Gson();
+        String url = "https://esearch.stg.fastenal.com/v1/employee/employeeList.json";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Object> entity = null;
+        entity = new HttpEntity<>("{\"query\" :  " + requestLeave.getEmpid() + "}"  , headers);
+        ResponseEntity<String> postResponse = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        Map<String, Map<String, String>> empInfo = new HashMap<>();
+        List<String> employeeList = new ArrayList<String>();
+        ESResponse response = gson.fromJson(postResponse.getBody() , ESResponse.class);
+        return response.getResponseBody().getData().getEmployeeList().get(0).getFirstName().split(" ")[0];
+    }
+
     public Map<String, String> obtainWeekRecord() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -47,10 +65,8 @@ public class TimeOutRuntime {
         Map<String, Map<String, String>> weekRecords = new HashMap<>();
 
         try {
-            preContainer = objectMapper.readValue(postResponse.getBody(), new TypeReference<HashMap>() {
-            });
-            weekRecords = objectMapper.readValue(preContainer.get("d"), new TypeReference<HashMap>() {
-            });
+            preContainer = objectMapper.readValue(postResponse.getBody(), new TypeReference<HashMap>() {});
+            weekRecords = objectMapper.readValue(preContainer.get("d"), new TypeReference<HashMap>() {});
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("just");
@@ -73,7 +89,8 @@ public class TimeOutRuntime {
         Map<String, Map<Integer, Map<String, String>>> swipeRecords = new HashMap<>();
 
         try {
-            garbageContainer = objectMapper.readValue(postResponse.getBody(), new TypeReference<HashMap>() {
+            garbageContainer =
+                    objectMapper.readValue(postResponse.getBody(), new TypeReference<HashMap>() {
             });
             swipeRecords = objectMapper.readValue(garbageContainer.get("d"), new TypeReference<HashMap>() {
             });

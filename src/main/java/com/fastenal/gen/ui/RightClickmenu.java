@@ -1,5 +1,6 @@
 package com.fastenal.gen.ui;
 
+import com.fastenal.gen.model.ESResponse;
 import com.fastenal.gen.model.RequestLeave;
 import com.fastenal.gen.model.RequestSwipe;
 import com.fastenal.gen.runtimeComponents.TimeOutRuntime;
@@ -36,6 +37,8 @@ public class RightClickmenu {
     @Autowired
     TrayIcon trayIcon;
 
+    String employeeName;
+
     @PostConstruct
     public void setEmpId() {
         refreshDates();
@@ -44,6 +47,7 @@ public class RightClickmenu {
             requestSwipe.setEmpid(employee);
             requestLeave.setEmpid(employee);
         }
+        employeeName = timeOutObject.obtainEmployeeInfo();
     }
 
     @Scheduled(cron = "1 0 0 ? * *")
@@ -63,14 +67,19 @@ public class RightClickmenu {
         employeeId.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String employee = JOptionPane.showInputDialog("Enter Employee Id");
-                if (!employee.isEmpty()) {
-                    requestSwipe.setEmpid(employee);
-                    requestLeave.setEmpid(employee);
-                }
+                setEmpId();
             }
         });
         trayPopupMenu.add(employeeId);
+
+        /*MenuItem moveBy = new MenuItem("Move By");
+        moveBy.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String time = JOptionPane.showInputDialog(trayPopupMenu,"Time to move by");
+            }
+        });
+        trayPopupMenu.add(moveBy);*/
 
         MenuItem swipeRecords = new MenuItem("List Swipe record");
         swipeRecords.addActionListener(new ActionListener() {
@@ -134,17 +143,17 @@ public class RightClickmenu {
         int dayMinuteToMove = Math.toIntExact(min%60);
 
         cl1.add(Calendar.HOUR,weekHourToMove);
-        cl1.add(Calendar.MINUTE, weekMinuteToMove);
+        cl1.add(Calendar.MINUTE, weekMinuteToMove+1);
 
         cl2.add(Calendar.HOUR, dayHourToMove);
-        cl2.add(Calendar.MINUTE,dayMinuteToMove);
+        cl2.add(Calendar.MINUTE,dayMinuteToMove+1);
 
-        trayIcon.displayMessage("User", "Time Left for week till today: " + weekHourToMove + " hours "
-                        + weekMinuteToMove + " minutes\n"
-                        + "Time Left for day: " + dayHourToMove + " hours " + dayMinuteToMove + " minutes\n"
-                        + "Move by\n" + "WEEK : " + cl1.getTime().toString()
-                        + "\nDAY : " + cl2.getTime().toString(),
-
+        trayIcon.displayMessage("Hi, " + employeeName,
+                     "Time Left (Week) -> " + weekHourToMove + " hours " + weekMinuteToMove + " minutes\n"
+                        + "Time Left (Day)  -> " + dayHourToMove + " hours " + dayMinuteToMove + " minutes\n"
+                        + "Leave After\n"
+                        + "Weekly Average   -> " + cl1.getTime().toString() + "\n"
+                        + "Daily Average    -> " + cl2.getTime().toString(),
                 TrayIcon.MessageType.INFO);
     }
 
