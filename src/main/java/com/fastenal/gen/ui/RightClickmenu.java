@@ -83,9 +83,13 @@ public class RightClickmenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String employee = JOptionPane.showInputDialog("Enter Employee Id");
+                List<EmployeeList> employeeLists;
                 if (!employee.isEmpty()) {
                     requestSwipe.setEmpid(employee);
                     requestLeave.setEmpid(employee);
+                    employeeLists = timeOutObject.obtainEmployeeInfo(employee);
+                    employeeName = (employeeLists.size() > 1) ? "I Am Confused?" :
+                            employeeLists.get(0).getFirstName().split(" ")[0];
                 }
             }
         });
