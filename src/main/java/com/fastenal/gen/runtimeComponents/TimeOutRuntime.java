@@ -1,6 +1,7 @@
 package com.fastenal.gen.runtimeComponents;
 
 import com.fastenal.gen.model.ESResponse;
+import com.fastenal.gen.model.EmployeeList;
 import com.fastenal.gen.model.RequestLeave;
 import com.fastenal.gen.model.RequestSwipe;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,18 +38,18 @@ public class TimeOutRuntime {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public String obtainEmployeeInfo() {
+    public List<EmployeeList> obtainEmployeeInfo(String employeeInfo) {
         Gson gson = new Gson();
         String url = "https://esearch.stg.fastenal.com/v1/employee/employeeList.json";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> entity = null;
-        entity = new HttpEntity<>("{\"query\" :  " + requestLeave.getEmpid() + "}"  , headers);
+        entity = new HttpEntity<>("{\"query\" :  \"" + employeeInfo + "\"}"  , headers);
         ResponseEntity<String> postResponse = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         Map<String, Map<String, String>> empInfo = new HashMap<>();
         List<String> employeeList = new ArrayList<String>();
         ESResponse response = gson.fromJson(postResponse.getBody() , ESResponse.class);
-        return response.getResponseBody().getData().getEmployeeList().get(0).getFirstName().split(" ")[0];
+        return response.getResponseBody().getData().getEmployeeList();
     }
 
     public Map<String, String> obtainWeekRecord() {

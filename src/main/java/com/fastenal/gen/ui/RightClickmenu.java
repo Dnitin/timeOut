@@ -1,6 +1,7 @@
 package com.fastenal.gen.ui;
 
 import com.fastenal.gen.model.ESResponse;
+import com.fastenal.gen.model.EmployeeList;
 import com.fastenal.gen.model.RequestLeave;
 import com.fastenal.gen.model.RequestSwipe;
 import com.fastenal.gen.runtimeComponents.TimeOutRuntime;
@@ -17,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -47,7 +49,9 @@ public class RightClickmenu {
             requestSwipe.setEmpid(employee);
             requestLeave.setEmpid(employee);
         }
-        employeeName = timeOutObject.obtainEmployeeInfo();
+        List<EmployeeList> employeeLists = timeOutObject.obtainEmployeeInfo(requestSwipe.getEmpid());
+        employeeName = (employeeLists.size()>1) ? "I Am Confused?" :
+                employeeLists.get(0).getFirstName().split(" ")[0];
     }
 
     @Scheduled(cron = "1 0 0 ? * *")
@@ -72,14 +76,20 @@ public class RightClickmenu {
         });
         trayPopupMenu.add(employeeId);
 
-        /*MenuItem moveBy = new MenuItem("Move By");
-        moveBy.addActionListener(new ActionListener() {
+        MenuItem findEmp = new MenuItem("Search Employee");
+        findEmp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String time = JOptionPane.showInputDialog(trayPopupMenu,"Time to move by");
+                String employeeName = JOptionPane.showInputDialog("Enter Employee Name");
+                List<EmployeeList> employeeLists = timeOutObject.obtainEmployeeInfo(employeeName);
+                String employeeData = "" ;
+                for(EmployeeList employeeList : employeeLists) {
+                    employeeData += employeeList.getName()+ " : " + employeeList.getEmpId() + "\n";
+                }
+                trayIcon.displayMessage("Are you looking for these people?" , employeeData, TrayIcon.MessageType.INFO);
             }
         });
-        trayPopupMenu.add(moveBy);*/
+        trayPopupMenu.add(findEmp);
 
         MenuItem swipeRecords = new MenuItem("List Swipe record");
         swipeRecords.addActionListener(new ActionListener() {
