@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,9 +21,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Repository
 public class TimeOutRuntime {
+
+    private static final Logger LOG = Logger.getLogger(TimeOutRuntime.class.getName());
 
     @Autowired
     private RequestLeave requestLeave;
@@ -39,6 +41,7 @@ public class TimeOutRuntime {
     private ObjectMapper objectMapper;
 
     public List<EmployeeList> obtainEmployeeInfo(String employeeInfo) {
+        LOG.info("TimeOutRuntime :: obtainEmployeeInfo() : Start");
         Gson gson = new Gson();
         String url = "https://esearch.stg.fastenal.com/v1/employee/employeeList.json";
         HttpHeaders headers = new HttpHeaders();
@@ -49,10 +52,14 @@ public class TimeOutRuntime {
         Map<String, Map<String, String>> empInfo = new HashMap<>();
         List<String> employeeList = new ArrayList<String>();
         ESResponse response = gson.fromJson(postResponse.getBody() , ESResponse.class);
+
+        LOG.info("TimeOutRuntime :: obtainEmployeeInfo() returning employeeList : End");
+
         return response.getResponseBody().getData().getEmployeeList();
     }
 
     public Map<String, String> obtainWeekRecord() {
+        LOG.info("TimeOutRuntime :: obtainWeekRecord() : Start");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> entity = null;
@@ -73,10 +80,12 @@ public class TimeOutRuntime {
             System.out.println("just");
             return null;
         }
+        LOG.info("TimeOutRuntime :: obtainWeekRecord() :: returning WeeklyHours Map : End");
         return weekRecords.get("WeeklyHours");
     }
 
     public Map<Integer, Map<String, String>> obtainSwipeRecord() {
+        LOG.info("TimeOutRuntime :: obtainSwipeRecord() : Start");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> entity = null;
@@ -99,15 +108,18 @@ public class TimeOutRuntime {
             e.printStackTrace();
             return null;
         }
+        LOG.info("TimeOutRuntime :: obtainSwipeRecord() :: returning SwipeRecord Map : End");
         return swipeRecords.get("SwipeRecord");
     }
 
-    public long timeInMinutes(String hours){
+    private long timeInMinutes(String hours){
+        LOG.info("TimeOutRuntime :: timeInMinutes() : Start");
         String[] hour = hours.split(":");
         return Long.valueOf(hour[0])*60+Long.valueOf(hour[1]);
     }
 
     public long calculateWeeklyRemainingTime() {
+        LOG.info("TimeOutRuntime :: calculateWeeklyRemainingTime() : Start");
         Map<String, String> weeklyhours = obtainWeekRecord();
         Long value = 0L;
         Long dayNum = 0L;
@@ -120,10 +132,12 @@ public class TimeOutRuntime {
                 dayNum = weekTotal/weekAvg;
             value = dayNum*8*60 - weekTotal;
         }
+        LOG.info("TimeOutRuntime :: calculateWeeklyRemainingTime() :: returning value : End");
         return value;
     }
 
     public long calculateRemainingMillis() {
+        LOG.info("TimeOutRuntime :: calculateRemainingMillis() : Start");
         Map<Integer, Map<String, String>> swipeRecord = obtainSwipeRecord();
         long millis = 0;
         long totalMillis = 28800000;
@@ -157,6 +171,7 @@ public class TimeOutRuntime {
             }
             millis += currDate.getTime() - prevDate.getTime();
         }
+        LOG.info("TimeOutRuntime :: calculateRemainingMillis() :: returning totalMillis - millis : End");
         return totalMillis - millis;
     }
 }

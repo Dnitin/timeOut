@@ -1,6 +1,5 @@
 package com.fastenal.gen.ui;
 
-import com.fastenal.gen.model.ESResponse;
 import com.fastenal.gen.model.EmployeeList;
 import com.fastenal.gen.model.RequestLeave;
 import com.fastenal.gen.model.RequestSwipe;
@@ -20,9 +19,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Repository
 public class RightClickmenu {
+
+    private static final Logger LOG = Logger.getLogger(RightClickmenu.class.getName());
 
     @Autowired
     TimeOutRuntime timeOutObject;
@@ -43,19 +45,13 @@ public class RightClickmenu {
 
     @PostConstruct
     public void setEmpId() {
+        LOG.info("RightClickmenu :: setEmpId() : Start");
         refreshDates();
         String systemId = System.getProperty("user.name");
         String employee;
         List<EmployeeList> employeeLists = timeOutObject.obtainEmployeeInfo(systemId);
-        if(employeeLists.size()<0 || employeeLists.size()>1) {
-            employee = JOptionPane.showInputDialog("Enter Employee Id");
-            if (!employee.isEmpty()) {
-                requestSwipe.setEmpid(employee);
-                requestLeave.setEmpid(employee);
-                employeeLists = timeOutObject.obtainEmployeeInfo(systemId);
-                employeeName = (employeeLists.size() > 1) ? "I Am Confused?" :
-                        employeeLists.get(0).getFirstName().split(" ")[0];
-            }
+        if(employeeLists.size()<=0 || employeeLists.size()>1) {
+            promptAndSetEmployeeInfo();
         }
         else {
             employee = employeeLists.get(0).getEmpId().replaceFirst("^0+(?!$)", "");
@@ -63,34 +59,44 @@ public class RightClickmenu {
             requestLeave.setEmpid(employee);
             employeeName = employeeLists.get(0).getFirstName().split(" ")[0];
         }
+        LOG.info("RightClickmenu :: setEmpId() : End");
     }
 
     @Scheduled(cron = "1 0 0 ? * *")
     public void refreshDates()
     {
+        LOG.info("RightClickmenu :: refreshDates() : Start");
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
         requestSwipe.setSelectedDate(dateFormat.format(date).toString());
         requestLeave.setCurrdate(dateFormat2.format(date).toString());
+        LOG.info("RightClickmenu :: refreshDates() : End");
+    }
+
+    public void promptAndSetEmployeeInfo() {
+        LOG.info("RightClickmenu :: promptAndSetEmployeeInfo() : Start");
+        String employee = JOptionPane.showInputDialog("Enter Employee Id");
+        List<EmployeeList> employeeLists;
+        if (!employee.isEmpty()) {
+            requestSwipe.setEmpid(employee);
+            requestLeave.setEmpid(employee);
+            employeeLists = timeOutObject.obtainEmployeeInfo(employee);
+            employeeName = (employeeLists.size() > 1) ? "I Am Confused?" :
+                    employeeLists.get(0).getFirstName().split(" ")[0];
+        }
+        LOG.info("RightClickmenu :: promptAndSetEmployeeInfo() : End");
     }
 
     public void renderRightClickMenu() {
+        LOG.info("RightClickmenu :: renderRightClickMenu() : Start");
         SystemTray systemTray = SystemTray.getSystemTray();
 
         MenuItem employeeId = new MenuItem("Employee ID");
         employeeId.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String employee = JOptionPane.showInputDialog("Enter Employee Id");
-                List<EmployeeList> employeeLists;
-                if (!employee.isEmpty()) {
-                    requestSwipe.setEmpid(employee);
-                    requestLeave.setEmpid(employee);
-                    employeeLists = timeOutObject.obtainEmployeeInfo(employee);
-                    employeeName = (employeeLists.size() > 1) ? "I Am Confused?" :
-                            employeeLists.get(0).getFirstName().split(" ")[0];
-                }
+                promptAndSetEmployeeInfo();
             }
         });
         trayPopupMenu.add(employeeId);
@@ -148,13 +154,16 @@ public class RightClickmenu {
         try {
             systemTray.add(trayIcon);
         } catch (AWTException e) {
-            e.printStackTrace();
+            LOG.severe(e.getMessage());
+            trayIcon.displayMessage("Oops!","Some Error Occured",TrayIcon.MessageType.ERROR);
         }
+        LOG.info("RightClickmenu :: renderRightClickMenu() : End");
     }
 
     @Scheduled(cron = "0 0 9-21/3 ? * MON-FRI")
     public void trayPopupLeftTime()
     {
+        LOG.info("RightClickmenu :: trayPopupLeftTime() : Start");
         Date d1 = new Date();
         Calendar cl1 = Calendar. getInstance();
         Calendar cl2 = Calendar. getInstance();
@@ -184,9 +193,12 @@ public class RightClickmenu {
                         + "Weekly Average   -> " + cl1.getTime().toString() + "\n"
                         + "Daily Average    -> " + cl2.getTime().toString(),
                 TrayIcon.MessageType.INFO);
+
+        LOG.info("RightClickmenu :: trayPopupLeftTime() : End");
     }
 
     public JTable getSwipeList() {
+        LOG.info("RightClickmenu :: getSwipeList() : Start");
         Map<Integer, Map<String, String>> swipeRecords = timeOutObject.obtainSwipeRecord();
         String[][] data = new String[swipeRecords.size()][3];
         String[] legends = {"Serial #", "Swipe Time", "In/Out"};
@@ -197,6 +209,7 @@ public class RightClickmenu {
             data[i][2] = entry.getValue().get("swipeInOut");
             i++;
         }
+        LOG.info("RightClickmenu :: getSwipeList() :: returning JTable : End");
         return new JTable(data, legends);
     }
 }
