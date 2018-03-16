@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @Repository
-public class RightClickmenu {
+public class RightClickMenu {
 
-    private static final Logger LOG = Logger.getLogger(RightClickmenu.class.getName());
+    private static final Logger LOG = Logger.getLogger(RightClickMenu.class.getName());
 
     @Autowired
     TimeOutRuntime timeOutObject;
@@ -45,7 +45,7 @@ public class RightClickmenu {
 
     @PostConstruct
     public void setEmpId() {
-        LOG.info("RightClickmenu :: setEmpId() : Start");
+        LOG.info("RightClickMenu :: setEmpId() : Start");
         refreshDates();
         String systemId = System.getProperty("user.name");
         String employee;
@@ -59,23 +59,23 @@ public class RightClickmenu {
             requestLeave.setEmpid(employee);
             employeeName = employeeLists.get(0).getFirstName().split(" ")[0];
         }
-        LOG.info("RightClickmenu :: setEmpId() : End");
+        LOG.info("RightClickMenu :: setEmpId() : End");
     }
 
     @Scheduled(cron = "1 0 0 ? * *")
     public void refreshDates()
     {
-        LOG.info("RightClickmenu :: refreshDates() : Start");
+        LOG.info("RightClickMenu :: refreshDates() : Start");
         DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         DateFormat dateFormat2 = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
         requestSwipe.setSelectedDate(dateFormat.format(date).toString());
         requestLeave.setCurrdate(dateFormat2.format(date).toString());
-        LOG.info("RightClickmenu :: refreshDates() : End");
+        LOG.info("RightClickMenu :: refreshDates() : End");
     }
 
     public void promptAndSetEmployeeInfo() {
-        LOG.info("RightClickmenu :: promptAndSetEmployeeInfo() : Start");
+        LOG.info("RightClickMenu :: promptAndSetEmployeeInfo() : Start");
         String employee = JOptionPane.showInputDialog("Enter Employee Id");
         List<EmployeeList> employeeLists;
         if (!employee.isEmpty()) {
@@ -85,11 +85,11 @@ public class RightClickmenu {
             employeeName = (employeeLists.size() > 1) ? "I Am Confused?" :
                     employeeLists.get(0).getFirstName().split(" ")[0];
         }
-        LOG.info("RightClickmenu :: promptAndSetEmployeeInfo() : End");
+        LOG.info("RightClickMenu :: promptAndSetEmployeeInfo() : End");
     }
 
     public void renderRightClickMenu() {
-        LOG.info("RightClickmenu :: renderRightClickMenu() : Start");
+        LOG.info("RightClickMenu :: renderRightClickMenu() : Start");
         SystemTray systemTray = SystemTray.getSystemTray();
 
         MenuItem employeeId = new MenuItem("Employee ID");
@@ -157,13 +157,13 @@ public class RightClickmenu {
             LOG.severe(e.getMessage());
             trayIcon.displayMessage("Oops!","Some Error Occured",TrayIcon.MessageType.ERROR);
         }
-        LOG.info("RightClickmenu :: renderRightClickMenu() : End");
+        LOG.info("RightClickMenu :: renderRightClickMenu() : End");
     }
 
     @Scheduled(cron = "0 0 9-21/3 ? * MON-FRI")
     public void trayPopupLeftTime()
     {
-        LOG.info("RightClickmenu :: trayPopupLeftTime() : Start");
+        LOG.info("RightClickMenu :: trayPopupLeftTime() : Start");
         Date d1 = new Date();
         Calendar cl1 = Calendar. getInstance();
         Calendar cl2 = Calendar. getInstance();
@@ -194,11 +194,11 @@ public class RightClickmenu {
                         + "Daily Average    -> " + cl2.getTime().toString(),
                 TrayIcon.MessageType.INFO);
 
-        LOG.info("RightClickmenu :: trayPopupLeftTime() : End");
+        LOG.info("RightClickMenu :: trayPopupLeftTime() : End");
     }
 
     public JTable getSwipeList() {
-        LOG.info("RightClickmenu :: getSwipeList() : Start");
+        LOG.info("RightClickMenu :: getSwipeList() : Start");
         Map<Integer, Map<String, String>> swipeRecords = timeOutObject.obtainSwipeRecord();
         String[][] data = new String[swipeRecords.size()][3];
         String[] legends = {"Serial #", "Swipe Time", "In/Out"};
@@ -209,7 +209,7 @@ public class RightClickmenu {
             data[i][2] = entry.getValue().get("swipeInOut");
             i++;
         }
-        LOG.info("RightClickmenu :: getSwipeList() :: returning JTable : End");
+        LOG.info("RightClickMenu :: getSwipeList() :: returning JTable : End");
         return new JTable(data, legends);
     }
 }

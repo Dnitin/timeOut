@@ -27,13 +27,13 @@ public class TimeOutConfig {
 
     @Bean
     public PopupMenu popupMenu() {
-        LOG.info("TimeOutConfig :: popupMenu() : Start");
+        LOG.info("TimeOutConfig :: popupMenu() : Initialised");
         return new PopupMenu();
     }
 
     @Bean
     public TrayIcon trayIcon() {
-        LOG.info("TimeOutConfig :: trayIcon() : Start");
+        LOG.info("TimeOutConfig :: trayIcon() : Initialised");
         URL url = Thread.currentThread().getContextClassLoader().getResource("images/icon.png");
         Image image = Toolkit.getDefaultToolkit().getImage(url);
         int trayIconWidth = new TrayIcon(image).getSize().width;
@@ -43,26 +43,26 @@ public class TimeOutConfig {
 
     @Bean
     public ObjectMapper objectMapper(){
-        LOG.info("TimeOutConfig :: objectMapper() : Start");
+        LOG.info("TimeOutConfig :: objectMapper() : Initialised");
         return new ObjectMapper();
     }
 
     @Bean
     public RequestLeave requestLeaveObject() {
-        LOG.info("TimeOutConfig :: requestLeaveObject() : Start");
+        LOG.info("TimeOutConfig :: requestLeaveObject() : Initialised");
         return new RequestLeave();
     }
 
     @Bean
     public RequestSwipe requestSwipeObject() {
-        LOG.info("TimeOutConfig :: requestSwipeObject() : Start");
+        LOG.info("TimeOutConfig :: requestSwipeObject() : Initialised");
         return new RequestSwipe();
     }
 
     @Bean
     public RestTemplate restTemplate()
     {
-        LOG.info("TimeOutConfig :: restTemplate() : Start");
+        LOG.info("TimeOutConfig :: restTemplate() : Initialised");
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 
         SSLContext sslContext = null;
@@ -87,5 +87,4 @@ public class TimeOutConfig {
         requestFactory.setHttpClient(httpClient);
         return new RestTemplate(requestFactory);
     }
-
 }
